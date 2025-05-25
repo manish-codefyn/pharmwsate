@@ -1,0 +1,253 @@
+{% extends "base.html" %}
+
+{% block title %}Donate Medicine{% endblock %}
+{% load crispy_forms_tags %}
+{% block extra_css %}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+
+{% endblock %}
+
+{% block content %}
+<div class="container py-5 animate__animated animate__fadeIn">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="donation-form">
+                <!-- Floating decorative elements -->
+                <div class="floating-shapes">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                </div>
+                
+                <div class="pill-decoration pill-1">
+                    <i class="bi bi-capsule-pill"></i>
+                </div>
+                <div class="pill-decoration pill-2">
+                    <i class="bi bi-capsule-pill"></i>
+                </div>
+                
+                <div class="form-header">
+                    <div class="form-icon">
+                        <i class="bi bi-heart-pulse"></i>
+                    </div>
+                    <h2 class="fw-bold">Donate Medicine</h2>
+                    <p class="text-muted">Your contribution can save lives. Help reduce medical waste by donating unused medicines.</p>
+                </div>
+                
+                <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <!-- Medicine Name -->
+                        <div class="col-md-6 mb-4 form-section">
+                            <label for="{{ form.name.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-capsule me-2 text-primary"></i> Medicine Name
+                            </label>
+                            {{ form.name|as_crispy_field }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.name.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Category -->
+                        <div class="col-md-6 mb-4 form-section">
+                            <label for="{{ form.category.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-tag-fill me-2 text-primary"></i> Category
+                            </label>
+                            {{ form.category|as_crispy_field }}
+                            {% if form.category.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.category.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div class="mb-4 form-section">
+                        <label for="{{ form.description.id_for_label }}" class="form-label fw-semibold">
+                            <i class="bi bi-card-text me-2 text-primary"></i> Description
+                        </label>
+                        {{ form.description|as_crispy_field }}
+                        {% if form.description.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                        <div class="form-text text-muted">Please include dosage, manufacturer, and any other relevant details.</div>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- Quantity -->
+                        <div class="col-md-6 mb-4 form-section">
+                            <label for="{{ form.quantity.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-box2 me-2 text-primary"></i> Quantity
+                            </label>
+                            {{ form.quantity|as_crispy_field }}
+                            {% if form.quantity.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.quantity.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Expiry Date -->
+                        <div class="col-md-6 mb-4 form-section">
+                            <label for="{{ form.expiry_date.id_for_label }}" class="form-label fw-semibold">
+                                <i class="bi bi-calendar2-check me-2 text-primary"></i> Expiry Date
+                            </label>
+                            {{ form.expiry_date|as_crispy_field }}
+                            {% if form.expiry_date.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.expiry_date.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Image Upload -->
+                    <div class="mb-4 form-section">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-camera me-2 text-primary"></i> Medicine Image (Optional)
+                        </label>
+                        <div class="image-preview-container">
+                            <div class="image-preview" id="imagePreview">
+                                <div class="image-placeholder">
+                                    <i class="bi bi-cloud-arrow-up"></i>
+                                    <p class="mb-0">Click to upload or drag and drop</p>
+                                    <small class="text-muted">PNG, JPG up to 5MB</small>
+                                </div>
+                            </div>
+                            {{ form.image|as_crispy_field }}
+                            {% if form.image.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.image.errors|join:", " }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Form Actions -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-5">
+                        <a href="{% url 'medicines:medicine-list' %}" class="btn btn-outline-secondary me-md-2 px-4 py-2 rounded-pill">
+                            <i class="bi bi-arrow-left me-2"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-submit text-white px-4 py-2">
+                            <i class="bi bi-heart-fill me-2"></i> Submit Donation
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Image preview functionality
+        const imageInput = document.querySelector('#{{ form.image.id_for_label }}');
+        const imagePreview = document.getElementById('imagePreview');
+        
+        // Make the entire preview area clickable
+        imagePreview.addEventListener('click', function() {
+            imageInput.click();
+        });
+        
+        // Handle drag and drop
+        imagePreview.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#00b4d8';
+            this.style.backgroundColor = '#e9f7fe';
+        });
+        
+        imagePreview.addEventListener('dragleave', function() {
+            this.style.borderColor = '#dee2e6';
+            this.style.backgroundColor = '#f8f9fa';
+        });
+        
+        imagePreview.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.style.borderColor = '#dee2e6';
+            this.style.backgroundColor = '#f8f9fa';
+            
+            if (e.dataTransfer.files.length) {
+                imageInput.files = e.dataTransfer.files;
+                updateImagePreview();
+            }
+        });
+        
+        imageInput.addEventListener('change', updateImagePreview);
+        
+        function updateImagePreview() {
+            const file = imageInput.files[0];
+            if (file) {
+                if (!file.type.match('image.*')) {
+                    alert('Please select an image file');
+                    return;
+                }
+                
+                const reader = new FileReader();
+                
+                reader.addEventListener('load', function() {
+                    imagePreview.innerHTML = '';
+                    const img = document.createElement('img');
+                    img.src = this.result;
+                    img.classList.add('animate__animated', 'animate__fadeIn');
+                    imagePreview.appendChild(img);
+                });
+                
+                reader.readAsDataURL(file);
+            } else {
+                imagePreview.innerHTML = `
+                    <div class="image-placeholder animate__animated animate__fadeIn">
+                        <i class="bi bi-cloud-arrow-up"></i>
+                        <p class="mb-0">Click to upload or drag and drop</p>
+                        <small class="text-muted">PNG, JPG up to 5MB</small>
+                    </div>
+                `;
+            }
+        }
+        
+        // Form validation
+        const forms = document.querySelectorAll('.needs-validation');
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    // Add animation to invalid fields
+                    form.querySelectorAll(':invalid').forEach(el => {
+                        el.classList.add('animate__animated', 'animate__shakeX');
+                        el.addEventListener('animationend', () => {
+                            el.classList.remove('animate__animated', 'animate__shakeX');
+                        });
+                    });
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+        
+        // Add floating animation to shapes
+        const shapes = document.querySelectorAll('.shape');
+        shapes.forEach((shape, index) => {
+            shape.style.animation = `float ${6 + index}s ease-in-out infinite alternate`;
+        });
+        
+        // Add style tag for floating animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes float {
+                0% { transform: translateY(0) rotate(0deg); }
+                100% { transform: translateY(-20px) rotate(5deg); }
+            }
+        `;
+        document.head.appendChild(style);
+    });
+</script>
+{% endblock %}

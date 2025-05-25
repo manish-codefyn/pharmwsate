@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>New Medicine Request - Admin Notification</title>
+</head>
+<body>
+    <h2>New Medicine Request Requires Approval</h2>
+    
+    <p>A new medicine request (ID: {{ request.id }}) has been submitted and requires your approval.</p>
+    
+    <h3>Request Details:</h3>
+    <ul>
+        <li><strong>User:</strong> {{ request.requester.get_full_name }}</li>
+        <li><strong>Medicine:</strong> {{ request.medicine.name }}</li>
+        <li><strong>Quantity:</strong> {{ request.quantity_requested }}</li>
+        <li><strong>Request Date:</strong> {{ request.created_at|date:"d M Y" }}</li>
+    </ul>
+    
+    <p>Please review this request in the admin panel and update its status accordingly.</p>
+    
+    <p>Please find attached a copy of the request for your records.</p>
+    
+    <p>System generated email - no reply needed.</p>
+</body>
+</html>

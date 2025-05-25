@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}{% if object %}Edit{% else %}Add New{% endif %} Delivery Address | PharmaWaste{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --medical-primary: #4361ee;
+        --medical-secondary: #3f37c9;
+        --medical-light: #f8f9fa;
+        --medical-dark: #212529;
+        --medical-gray: #6c757d;
+    }
+    
+    .address-form-card {
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border: 1px solid rgba(0,0,0,0.05);
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .address-form-header {
+        background: linear-gradient(135deg, var(--medical-primary), var(--medical-secondary));
+        color: white;
+        padding: 1.5rem;
+    }
+    
+    .address-form-body {
+        padding: 2rem;
+        background-color: white;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--medical-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+    }
+    
+    .form-control:focus {
+        border-color: var(--medical-primary);
+        box-shadow: 0 0 0 0.25rem rgba(67, 97, 238, 0.1);
+    }
+    
+    .submit-btn {
+        background: linear-gradient(135deg, var(--medical-primary), var(--medical-secondary));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+    }
+    
+    .back-btn {
+        background-color: white;
+        border: 1px solid var(--medical-primary);
+        color: var(--medical-primary);
+        border-radius: 12px;
+        padding: 0.75rem 2rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    
+    .back-btn:hover {
+        background-color: rgba(67, 97, 238, 0.1);
+    }
+    
+    .form-check-input {
+        width: 1.2em;
+        height: 1.2em;
+        margin-top: 0.15em;
+    }
+    
+    .form-check-label {
+        margin-left: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .address-form-body {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="address-form-card">
+        <div class="address-form-header">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-geo-alt-fill me-3" style="font-size: 1.75rem;"></i>
+                <h2 class="mb-0">{% if object %}Edit{% else %}Add New{% endif %} Delivery Address</h2>
+            </div>
+        </div>
+        
+        <div class="address-form-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <label for="{{ form.address_line1.id_for_label }}" class="form-label">Address Line 1</label>
+                        {{ form.address_line1 }}
+                        {% if form.address_line1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.address_line1.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-12">
+                        <label for="{{ form.address_line2.id_for_label }}" class="form-label">Address Line 2 (Optional)</label>
+                        {{ form.address_line2 }}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.city.id_for_label }}" class="form-label">City</label>
+                        {{ form.city }}
+                        {% if form.city.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.city.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.state.id_for_label }}" class="form-label">State/Province</label>
+                        {{ form.state }}
+                        {% if form.state.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.state.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.postal_code.id_for_label }}" class="form-label">Postal Code</label>
+                        {{ form.postal_code }}
+                        {% if form.postal_code.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.postal_code.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <label for="{{ form.country.id_for_label }}" class="form-label">Country</label>
+                        {{ form.country }}
+                        {% if form.country.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.country.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="col-12">
+                        <div class="form-check">
+                            {{ form.is_primary }}
+                            <label for="{{ form.is_primary.id_for_label }}" class="form-check-label">
+                                Set as primary address
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between pt-3">
+                    <a href="{% url 'profile' %}" class="btn back-btn">
+                        <i class="bi bi-arrow-left me-2"></i> Back to Profile
+                    </a>
+                    <button type="submit" class="btn submit-btn">
+                        <i class="bi bi-check-circle me-2"></i> Save Address
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add validation classes when form is submitted
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        if (!form.checkValidity()) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Add Bootstrap's was-validated class to show validation messages
+            form.classList.add('was-validated');
+        }
+    }, false);
+    
+    // You could add address autocomplete here using Google Maps API or similar
+    // Example:
+    // const address1Field = document.getElementById("{{ form.address_line1.id_for_label }}");
+    // const autocomplete = new google.maps.places.Autocomplete(address1Field, {
+    //     fields: ["address_components", "geometry"],
+    //     types: ["address"],
+    // });
+});
+</script>
+{% endblock %}

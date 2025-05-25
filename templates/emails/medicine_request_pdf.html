@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicine Request #{{ request.id }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        h1 { color: #2c3e50; }
+        .header { text-align: center; margin-bottom: 20px; }
+        .details { margin: 20px 0; }
+        .detail-row { margin-bottom: 10px; }
+        .label { font-weight: bold; display: inline-block; width: 150px; }
+        .footer { margin-top: 30px; font-size: 12px; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Medicine Request</h1>
+        <p>Request ID: #{{ request.id }}</p>
+        <p>Date: {{ current_date }}</p>
+    </div>
+    
+    <div class="details">
+        <h2>Request Details</h2>
+        <div class="detail-row">
+            <span class="label">Status:</span>
+            <span>{{ request.get_status_display }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Requested By:</span>
+            <span>{{ request.requester.get_full_name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Medicine:</span>
+            <span>{{ request.medicine.name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Quantity:</span>
+            <span>{{ request.quantity_requested }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="label">Request Date:</span>
+            <span>{{ request.created_at|date:"d M Y H:i" }}</span>
+        </div>
+        {% if request.delivery_address %}
+        <div class="detail-row">
+            <span class="label">Delivery Address:</span>
+            <span>{{ request.delivery_address.get_full_address }}</span>
+        </div>
+        {% endif %}
+        {% if request.message %}
+        <div class="detail-row">
+            <span class="label">Message:</span>
+            <span>{{ request.message }}</span>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="footer">
+        <p>This is an auto-generated document. Please contact support for any queries.</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!-- templates/dashboard/request_detail.html -->
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h3>Request Details</h3>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5>Medicine Information</h5>
+                <p><strong>Name:</strong> {{ object.medicine.name }}</p>
+                <p><strong>Category:</strong> {{ object.medicine.category.name }}</p>
+                <p><strong>Expiry Date:</strong> {{ object.medicine.expiry_date }}</p>
+            </div>
+            <div class="col-md-6">
+                <h5>Request Information</h5>
+                <p><strong>Status:</strong> 
+                    <span class="badge bg-{% if object.status == 'approved' %}success{% elif object.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                        {{ object.get_status_display }}
+                    </span>
+                </p>
+                <p><strong>Quantity Requested:</strong> {{ object.quantity_requested }}</p>
+                <p><strong>Requested On:</strong> {{ object.created_at }}</p>
+                {% if request.user.is_staff %}
+                <p><strong>Requested By:</strong> {{ object.requester.username }}</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="mb-3">
+            <h5>Message</h5>
+            <p>{{ object.message|default:"No message provided" }}</p>
+        </div>
+        
+        <div class="d-flex justify-content-between">
+            <a href="{% if request.user.is_staff %}{% url 'dashboard:request-list' %}{% else %}{% url 'dashboard:my-requests' %}{% endif %}" class="btn btn-secondary">
+                Back to List
+            </a>
+            {% if request.user.is_staff %}
+            <a href="{% url 'dashboard:request-update' object.pk %}" class="btn btn-primary">
+                Update Status
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

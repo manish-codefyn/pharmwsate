@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8 mx-auto text-center">
+        <h1>Welcome to PharmaWaste</h1>
+        <p class="lead">Connecting surplus medicines with those in need</p>
+        <a href="{% url 'medicines:medicine-list' %}" class="btn btn-primary btn-lg">Browse Available Medicines</a>
+        {% if user.is_authenticated %}
+            <a href="{% url 'medicines:medicine-create' %}" class="btn btn-success btn-lg ms-2">Donate Medicines</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3>Recently Added Medicines</h3>
+            </div>
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for medicine in medicines|slice:":5" %}
+                        <li class="list-group-item">
+                            <a href="{% url 'medicines:medicine-detail' slug=medicine.slug %}">{{ medicine.name }}</a>
+                            <span class="badge bg-secondary float-end">Exp: {{ medicine.expiry_date|date:"Y-m-d" }}</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">No medicines available</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3>About PharmaWaste</h3>
+            </div>
+            <div class="card-body">
+                <p>PharmaWaste is a platform that connects hospitals, clinics, and pharmacies with surplus but unexpired medicines to NGOs, rural clinics, and patients in need.</p>
+                <p>Our mission is to reduce medicine waste and improve access to essential medications for underserved communities.</p>
+                <p>Join us in making healthcare more accessible and sustainable!</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

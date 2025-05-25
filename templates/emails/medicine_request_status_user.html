@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicine Request Status Update</title>
+</head>
+<body>
+    <h2>Medicine Request Status Update</h2>
+    <p>Dear {{ request.requester.get_full_name }},</p>
+    
+    <p>The status of your medicine request (ID: {{ request.id }}) has been updated to <strong>{{ status }}</strong>.</p>
+    
+    <h3>Request Details:</h3>
+    <ul>
+        <li><strong>Medicine:</strong> {{ request.medicine.name }}</li>
+        <li><strong>Quantity:</strong> {{ request.quantity_requested }}</li>
+        <li><strong>Request Date:</strong> {{ request.created_at|date:"d M Y" }}</li>
+        <li><strong>Status:</strong> {{ status }}</li>
+    </ul>
+    
+    <p>Please find attached a copy of your request for your records.</p>
+    
+    <p>If you have any questions, please contact our support team.</p>
+    
+    <p>Best regards,<br>
+    The Pharmacy Team</p>
+</body>
+</html>

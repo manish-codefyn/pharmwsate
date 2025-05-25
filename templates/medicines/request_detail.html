@@ -1,0 +1,63 @@
+                    <div class="timeline-content">
+                        <h6>Request Approved</h6>
+                        <p class="text-muted">{{ request.approved_at|date:"M d, Y H:i" }}</p>
+                        {% if request.approved_by %}
+                        <p class="text-muted">Approved by: {{ request.approved_by.get_full_name }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if request.dispatched_at %}
+                <div class="timeline-item {% if request.status not in 'pending,approved,dispatched' %}active{% endif %}">
+                    <div class="timeline-point"></div>
+                    <div class="timeline-content">
+                        <h6>Medicine Dispatched</h6>
+                        <p class="text-muted">{{ request.dispatched_at|date:"M d, Y H:i" }}</p>
+                        {% if request.tracking_number %}
+                        <p class="text-muted">Tracking #: {{ request.tracking_number }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if request.delivered_at %}
+                <div class="timeline-item active">
+                    <div class="timeline-point"></div>
+                    <div class="timeline-content">
+                        <h6>Delivered Successfully</h6>
+                        <p class="text-muted">{{ request.delivered_at|date:"M d, Y H:i" }}</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{% url 'medicine_requests' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Requests
+                </a>
+                
+                {% if request.status == 'pending' %}
+                <div>
+                    <a href="#" class="btn btn-outline-primary me-2">
+                        <i class="fas fa-edit me-2"></i>Edit Request
+                    </a>
+                    <a href="#" class="btn btn-outline-danger">
+                        <i class="fas fa-trash-alt me-2"></i>Cancel Request
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card-footer bg-light">
+            <small class="text-muted">
+                <i class="fas fa-info-circle me-2"></i>
+                Need help? Contact our support team at support@medicineservice.com
+            </small>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

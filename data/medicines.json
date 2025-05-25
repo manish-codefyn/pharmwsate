@@ -1,0 +1,47 @@
+[
+    {
+      "name": "Paracetamol",
+      "description": "Pain reliever and fever reducer",
+      "category": "Painkiller",
+      "quantity": 50,
+      "expiry_date": "2025-12-31",
+      "donor_email": "donor@example.com",
+      "recipient_email": "recipient@example.com",
+      "is_available": true,
+      "image": "medicine_images/paracetamol.jpg"
+    },
+    {
+      "name": "Amoxicillin",
+      "description": "Antibiotic for infections",
+      "category": "Antibiotic",
+      "quantity": 30,
+      "expiry_date": "2025-08-15",
+      "donor_email": "donor@example.com",
+      "recipient_email": null,
+      "is_available": true,
+      "image": "medicine_images/amoxicillin.jpg"
+    },
+    {
+      "name": "Cetirizine",
+      "description": "Used for allergies and hay fever",
+      "category": "Antihistamine",
+      "quantity": 100,
+      "expiry_date": "2026-01-10",
+      "donor_email": "donor@example.com",
+      "recipient_email": null,
+      "is_available": true,
+      "image": "medicine_images/cetirizine.jpg"
+    },
+    {
+      "name": "Ibuprofen",
+      "description": "Reduces inflammation and pain",
+      "category": "Painkiller",
+      "quantity": 75,
+      "expiry_date": "2025-11-20",
+      "donor_email": "donor@example.com",
+      "recipient_email": "recipient@example.com",
+      "is_available": true,
+      "image": "medicine_images/ibuprofen.jpg"
+    }
+  ]
+  

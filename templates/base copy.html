@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PharmaWaste - {% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+        .notification-badge {
+            position: relative;
+            top: -10px;
+            right: -5px;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'medicines:home' %}">PharmaWaste</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'medicines:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'medicines:medicine-list' %}">Browse Medicines</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'medicines:category-list' %}">Categories</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                {% with unread_count=user.notification_set.filter(is_read=False).count %}
+                                {% if unread_count > 0 %}
+                                    {% if unread_count > 0 %}
+                                        <span class="position-relative">
+                                            Notifications
+                                            <span class="badge bg-danger notification-badge">{{ unread_count }}</span>
+                                        </span>
+                                        {% else %}
+                                        Notifications
+                                        {% endif %}
+                                {% endwith %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                {% for notification in user.notification_set.all|slice:":5" %}
+                                    <li>
+                                        <a class="dropdown-item {% if not notification.is_read %}fw-bold{% endif %}" 
+                                           href="{% url 'medicines:mark-notification-read' pk=notification.pk %}">
+                                            {{ notification.message|truncatechars:50 }}
+                                            <small class="text-muted">{{ notification.created_at|timesince }} ago</small>
+                                        </a>
+                                    </li>
+                                {% empty %}
+                                    <li><span class="dropdown-item">No notifications</span></li>
+                                {% endfor %}
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">View all</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                {{ user.username }}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a class="dropdown-item" href="{% url 'medicines:donor-dashboard' %}">Donor Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'medicines:recipient-dashboard' %}">Recipient Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'register' %}">Register</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer class="footer">
+        <div class="container text-center">
+            <p>&copy; {% now "Y" %} PharmaWaste - Medicine Expiry Exchange Network</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

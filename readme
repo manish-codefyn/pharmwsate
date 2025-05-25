@@ -1,0 +1,17 @@
+
+
+python manage.py shell
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
+User.objects.create_user(
+    username="donor",
+    email="donor@example.com",
+    password="donorpass"
+)
+
+User.objects.create_user(
+    username="recipient",
+    email="recipient@example.com",
+    password="recipientpass"
+)

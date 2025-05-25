@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block title %}Browse Medicines{% endblock %}
+
+{% block extra_css %}
+<style>
+   
+   
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="medicine-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-5 fw-bold mb-3">
+                    <i class="bi bi-capsule-pill me-2" style="color: var(--medical-primary);"></i> 
+                    Available Medicines
+                </h1>
+                <p class="lead text-muted mb-4">
+                    Browse or search medicines donated by our generous community. Help reduce waste while helping those in need.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'medicines:medicine-create' %}" class="donate-btn">
+                        <i class="bi bi-plus-circle-fill me-2"></i> Donate Medicine
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Search & Filter Card -->
+    <div class="search-card">
+        <form method="get" class="row g-3 align-items-center">
+            <div class="col-md-7">
+                <div class="input-group">
+                    <span class="input-group-text bg-transparent border-end-0">
+                        <i class="bi bi-search text-muted"></i>
+                    </span>
+                    <input type="text" name="search" class="form-control border-start-0" 
+                           placeholder="Search medicines by name or description..." 
+                           value="{{ request.GET.search }}">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="category" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category.slug }}" {% if request.GET.category == category.slug %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-2 d-grid">
+                <button type="submit" class="filter-btn btn btn-primary">
+                    <i class="bi bi-funnel-fill me-2"></i> Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Medicine Grid -->
+    <div class="row">
+        {% for medicine in medicines %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="medicine-card">
+                    <div class="medicine-img-container">
+                        {% if medicine.image %}
+                            <img src="{{ medicine.image.url }}" class="medicine-img" alt="{{ medicine.name }}">
+                        {% else %}
+                            <div class="h-100 d-flex align-items-center justify-content-center bg-light">
+                                <i class="bi bi-capsule text-muted" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        <span class="badge expiry-badge bg-{% if medicine.is_expired %}danger{% else %}success{% endif %}">
+                            <i class="bi bi-calendar-event me-1"></i> {{ medicine.expiry_date|date:"Y-m-d" }}
+                        </span>
+                    </div>
+                    <div class="medicine-body">
+                        <h5 class="medicine-title">
+                            <i class="bi bi-capsule me-1" style="color: var(--medical-primary);"></i> 
+                            {{ medicine.name }}
+                        </h5>
+                        <p class="medicine-description">
+                            {{ medicine.description|truncatechars:120 }}
+                        </p>
+                        <div class="medicine-meta">
+                            <span class="meta-item">
+                                <i class="bi bi-tag me-1"></i> {{ medicine.category.name }}
+                            </span>
+                            <span class="meta-item">
+                                <i class="bi bi-box-seam me-1"></i> {{ medicine.quantity }} available
+                            </span>
+                        </div>
+                        <a href="{% url 'medicines:medicine-detail' slug=medicine.slug %}" class="btn view-btn">
+                            <i class="bi bi-eye-fill me-2"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="bi bi-capsule"></i>
+                    </div>
+                    <h4 class="mb-3">No Medicines Found</h4>
+                    <p class="text-muted mb-4">
+                        We couldn't find any medicines matching your criteria. Try adjusting your search filters.
+                    </p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'medicines:medicine-create' %}" class="btn btn-primary">
+                            <i class="bi bi-plus-circle-fill me-2"></i> Be the first to donate
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+        <nav aria-label="Medicine pagination">
+            <ul class="pagination justify-content-center mt-5">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                            <i class="bi bi-chevron-left me-1"></i> Previous
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link"><i class="bi bi-chevron-left me-1"></i> Previous</span>
+                    </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ num }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                                {{ num }}
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                            Next <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">Next <i class="bi bi-chevron-right ms-1"></i></span>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add hover effects to medicine cards
+        const medicineCards = document.querySelectorAll('.medicine-card');
+        
+        medicineCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                const img = this.querySelector('.medicine-img');
+                if (img) {
+                    img.style.transform = 'scale(1.05)';
+                }
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                const img = this.querySelector('.medicine-img');
+                if (img) {
+                    img.style.transform = 'scale(1)';
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

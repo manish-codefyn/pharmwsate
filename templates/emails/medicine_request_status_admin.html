@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medicine Request Status Update - Admin Notification</title>
+</head>
+<body>
+    <h2>Medicine Request Status Update - Admin Notification</h2>
+    
+    <p>The status of medicine request (ID: {{ request.id }}) has been updated to <strong>{{ status }}</strong>.</p>
+    
+    <h3>Request Details:</h3>
+    <ul>
+        <li><strong>User:</strong> {{ request.requester.get_full_name }}</li>
+        <li><strong>Medicine:</strong> {{ request.medicine.name }}</li>
+        <li><strong>Quantity:</strong> {{ request.quantity_requested }}</li>
+        <li><strong>Request Date:</strong> {{ request.created_at|date:"d M Y" }}</li>
+        <li><strong>Status:</strong> {{ status }}</li>
+    </ul>
+    
+    <p>Please find attached a copy of the request for your records.</p>
+    
+    <p>System generated email - no reply needed.</p>
+</body>
+</html>

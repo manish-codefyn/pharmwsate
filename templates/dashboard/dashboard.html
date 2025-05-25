@@ -1,0 +1,66 @@
+<!-- templates/dashboard/dashboard.html -->
+{% extends 'dashboard/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2>{% if is_admin %}All Requests{% else %}My Recent Requests{% endif %}</h2>
+        
+        <div class="list-group">
+            {% for request in object_list %}
+            <a href="" class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ request.medicine.name }}</h5>
+                    <span class="badge bg-{% if request.status == 'approved' %}success{% elif request.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                        {{ request.get_status_display }}
+                    </span>
+                </div>
+                <p class="mb-1">Quantity: {{ request.quantity_requested }}</p>
+                <small>Requested on {{ request.created_at|date:"M d, Y" }}</small>
+                {% if is_admin %}
+                <div class="mt-2">
+                    <small>Requested by: {{ request.requester.username }}</small>
+                </div>
+                {% endif %}
+            </a>
+            {% empty %}
+            <div class="list-group-item">
+                No requests found
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <a href="{% url 'dashboard:medicine-list' %}" class="btn btn-primary w-100 mb-2">
+                    Browse Medicines
+                </a>
+                {% if is_admin %}
+                <a href="{% url 'dashboard:request-list' %}" class="btn btn-secondary w-100 mb-2">
+                    Manage All Requests
+                </a>
+                {% else %}
+                <a href="{% url 'dashboard:my-requests' %}" class="btn btn-secondary w-100 mb-2">
+                    View My Requests
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Stats</h5>
+                <p>Available Medicines: {{ available_medicines }}</p>
+                {% if is_admin %}
+                <p>Total Requests: {{ object_list.count }}</p>
+                {% else %}
+                <p>My Requests: {{ object_list.count }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

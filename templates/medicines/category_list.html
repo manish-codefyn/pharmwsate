@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Medicine Categories{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bold display-4 mb-3 text-gradient-primary">Browse by Category</h1>
+        <p class="lead text-muted">Find the right medicine for your needs through our organized categories</p>
+    </div>
+
+    <div class="row g-4">
+        {% for category in categories %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card category-card h-100 border-0 overflow-hidden">
+                <div class="card-body p-4 d-flex flex-column">
+                    <div class="category-icon mb-4">
+                        <div class="icon-wrapper bg-soft-{{ forloop.counter|add:1 }}">
+                            <i class="bi bi-{% cycle 'capsule' 'heart-pulse' 'lungs' 'bandage' 'thermometer' 'eye' %} fs-2 text-{{ forloop.counter|add:1 }}"></i>
+                        </div>
+                    </div>
+                    <h3 class="h5 fw-bold mb-3">{{ category.name }}</h3>
+                    <p class="text-muted flex-grow-1">{{ category.description|truncatechars:120 }}</p>
+                    <a href="{% url 'medicines:medicine-list' %}?category={{ category.slug }}" class="btn btn-soft-{{ forloop.counter|add:1 }} hover-lift mt-auto align-self-start">
+                        Explore <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center py-4">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                No categories available at the moment. Please check back later.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    :root {
+        --primary: #4361ee;
+        --secondary: #3f37c9;
+        --success: #4cc9f0;
+        --info: #4895ef;
+        --warning: #f72585;
+        --danger: #7209b7;
+    }
+    
+    .text-gradient-primary {
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .category-card {
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        background-color: #fff;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .category-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+    }
+    
+    .icon-wrapper {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .category-card:hover .icon-wrapper {
+        transform: rotate(15deg) scale(1.1);
+    }
+    
+    .bg-soft-1 { background-color: rgba(67, 97, 238, 0.1); }
+    .bg-soft-2 { background-color: rgba(244, 63, 94, 0.1); }
+    .bg-soft-3 { background-color: rgba(16, 185, 129, 0.1); }
+    .bg-soft-4 { background-color: rgba(245, 158, 11, 0.1); }
+    .bg-soft-5 { background-color: rgba(139, 92, 246, 0.1); }
+    .bg-soft-6 { background-color: rgba(20, 184, 166, 0.1); }
+    
+    .text-1 { color: #4361ee; }
+    .text-2 { color: #f43f5e; }
+    .text-3 { color: #10b981; }
+    .text-4 { color: #f59e0b; }
+    .text-5 { color: #8b5cf6; }
+    .text-6 { color: #14b8a6; }
+    
+    .btn-soft-1 {
+        background-color: rgba(67, 97, 238, 0.1);
+        color: #4361ee;
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .btn-soft-2 {
+        background-color: rgba(244, 63, 94, 0.1);
+        color: #f43f5e;
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .btn-soft-3 {
+        background-color: rgba(16, 185, 129, 0.1);
+        color: #10b981;
+        border-radius: 8px;
+        border: none;
+    }
+    
+    .hover-lift:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+</style>
+{% endblock %}

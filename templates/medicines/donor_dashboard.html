@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}Donor Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <h1>Donor Dashboard</h1>
+        <p class="lead">Manage your donated medicines</p>
+    </div>
+    <div class="col-md-4 text-end">
+        <a href="{% url 'medicines:medicine-create' %}" class="btn btn-success">Donate New Medicine</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Your Donated Medicines</h3>
+            </div>
+            <div class="card-body">
+                {% if medicines %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Expiry Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in medicines %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'medicines:medicine-detail' slug=medicine.slug %}">{{ medicine.name }}</a>
+                                        </td>
+                                        <td>{{ medicine.quantity }}</td>
+                                        <td class="{% if medicine.is_expired %}text-danger{% endif %}">
+                                            {{ medicine.expiry_date|date:"Y-m-d" }}
+                                        </td>
+                                        <td>
+                                            {% if medicine.is_expired %}
+                                                <span class="badge bg-danger">Expired</span>
+                                            {% elif not medicine.is_available %}
+                                                <span class="badge bg-secondary">Unavailable</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Available</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'medicines:medicine-update' slug=medicine.slug %}" class="btn btn-sm btn-secondary">Edit</a>
+                                            <a href="{% url 'medicines:medicine-detail' slug=medicine.slug %}" class="btn btn-sm btn-primary">View</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">You haven't donated any medicines yet.</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0">Donation Requests</h3>
+            </div>
+            <div class="card-body">
+                {% if donation_requests %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Requester</th>
+                                    <th>Quantity</th>
+                                    <th>Purpose</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in donation_requests %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'medicines:medicine-detail' slug=request.medicine.slug %}">{{ request.medicine.name }}</a>
+                                        </td>
+                                        <td>{{ request.requester.username }}</td>
+                                        <td>{{ request.quantity_requested }}</td>
+                                        <td>{{ request.purpose|truncatechars:50 }}</td>
+                                        <td>
+                                            {% if request.status == 'pending' %}
+                                                <span class="badge bg-warning text-dark">Pending</span>
+                                            {% elif request.status == 'approved' %}
+                                                <span class="badge bg-info">Approved</span>
+                                            {% elif request.status == 'rejected' %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                            {% elif request.status == 'completed' %}
+                                                <span class="badge bg-success">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if request.status == 'pending' %}
+                                                <a href="{% url 'medicines:update-request-status' pk=request.id status='approved' %}" class="btn btn-sm btn-success">Approve</a>
+                                                <a href="{% url 'medicines:update-request-status' pk=request.id status='rejected' %}" class="btn btn-sm btn-danger">Reject</a>
+                                            {% elif request.status == 'approved' %}
+                                                <a href="{% url 'medicines:update-request-status' pk=request.id status='completed' %}" class="btn btn-sm btn-primary">Mark Complete</a>
+                                            {% endif %}
+                                            <a href="{% url 'medicines:medicine-detail' slug=request.medicine.slug %}" class="btn btn-sm btn-secondary">View</a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">You don't have any donation requests yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

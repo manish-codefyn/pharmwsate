@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+{% block content %}
+<div class="container mt-5 py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">
+            <i class="bi bi-bell-fill text-primary me-2"></i>Your Notifications
+        </h2>
+        {% if notifications %}
+        <a href="{% url 'mark-notification-read' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-check-all me-1"></i>Mark all as read
+        </a>
+        {% endif %}
+    </div>
+
+    {% if notifications %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-0 overflow-hidden rounded-3">
+            <div class="list-group list-group-flush">
+                {% for notification in notifications %}
+                <div class="list-group-item list-group-item-action {% if not notification.is_read %}bg-light bg-opacity-50{% endif %} py-3 border-0 border-bottom">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="me-3 flex-grow-1">
+                            <div class="d-flex align-items-center mb-1">
+                                {% if not notification.is_read %}
+                                <span class="badge bg-primary me-2">New</span>
+                                {% endif %}
+                                <h6 class="mb-0 {% if not notification.is_read %}text-dark fw-semibold{% else %}text-muted{% endif %}">
+                                    {{ notification.message }}
+                                </h6>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>{{ notification.created_at|naturaltime }}
+                            </small>
+                        </div>
+                        <div class="d-flex flex-nowrap gap-2">
+                            {% if notification.related_url %}
+                            <a href="{{ notification.related_url }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <i class="bi bi-eye"></i>
+                                <span class="d-none d-sm-inline ms-1">View</span>
+                            </a>
+                            {% endif %}
+                            {% if not notification.is_read %}
+                            <a href="{% url 'mark-notification-as-read' notification.pk %}" class="btn btn-sm btn-outline-success" title="Mark as read">
+                                <i class="bi bi-check-lg"></i>
+                                <span class="d-none d-sm-inline ms-1">Mark read</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-center">
+        {% include 'partials/pagination.html' with page_obj=notifications %}
+    </div>
+    {% else %}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-bell-slash text-muted fs-1 mb-3"></i>
+            <h4 class="text-muted mb-2">No notifications yet</h4>
+            <p class="text-muted mb-0">We'll notify you when there's something new</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    .list-group-item {
+        transition: all 0.2s ease;
+    }
+    .list-group-item:hover {
+        background-color: rgba(var(--bs-primary-rgb), 0.05) !important;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-capsule me-2"></i>
+                        Request Medicine: {{ medicine.name }}
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if request_form.non_field_errors %}
+                        <div class="alert alert-danger mb-4">
+                            {% for error in request_form.non_field_errors %}
+                                <p class="mb-0"><i class="bi bi-exclamation-triangle-fill me-2"></i> {{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <form method="post" id="request-form" novalidate>
+                        {% csrf_token %}
+
+                        <!-- Quantity Field -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Quantity Needed</h5>
+                            {{ request_form.quantity_requested }}
+                            {% if request_form.quantity_requested.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in request_form.quantity_requested.errors %}
+                                        {{ error }}
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                            <div class="form-text">
+                                Available: <strong>{{ medicine.quantity }}</strong> units
+                            </div>
+                        </div>
+
+                        <!-- Address Section -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Delivery Address</h5>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="address_option" id="use_existing" value="existing" checked>
+                                <label class="form-check-label" for="use_existing">Use existing address</label>
+                            </div>
+
+                            <div id="existing-address-section" class="ps-4 mb-3">
+                                {{ request_form.delivery_address }}
+                                {% if request_form.delivery_address.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in request_form.delivery_address.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio" name="address_option" id="add_new" value="new">
+                                <label class="form-check-label" for="add_new">Add new address</label>
+                            </div>
+
+                            <div id="new-address-section" class="ps-4" style="display: none;">
+                                <div class="row g-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Address Line 1*</label>
+                                        <input type="text" class="form-control" id="id_address_line1" required>
+                                        <div class="invalid-feedback" id="address_line1_error"></div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <label class="form-label">Address Line 2 (Optional)</label>
+                                        <input type="text" class="form-control" id="id_address_line2">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">City*</label>
+                                        <input type="text" class="form-control" id="id_city" required>
+                                        <div class="invalid-feedback" id="city_error"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">State/Province*</label>
+                                        <input type="text" class="form-control" id="id_state" required>
+                                        <div class="invalid-feedback" id="state_error"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Postal Code*</label>
+                                        <input type="text" class="form-control" id="id_postal_code" required>
+                                        <div class="invalid-feedback" id="postal_code_error"></div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Country*</label>
+                                        <input type="text" class="form-control" id="id_country" required>
+                                        <div class="invalid-feedback" id="country_error"></div>
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input type="checkbox" class="form-check-input" id="id_is_primary">
+                                            <label class="form-check-label" for="id_is_primary">Set as primary address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="button" id="save-address-btn" class="btn btn-primary">
+                                        <i class="bi bi-save me-2"></i> Save Address
+                                    </button>
+                                    <div id="address-status" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message Field -->
+                        <div class="mb-4">
+                            <h5 class="mb-3">Additional Information</h5>
+                            {{ request_form.message }}
+                            <div class="form-text">Optional: Tell the donor why you need this medicine</div>
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'medicines:medicine-detail' slug=medicine.slug %}" class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary" id="submit-btn">
+                                <i class="bi bi-send me-2"></i> Submit Request
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const existingRadio = document.getElementById('use_existing');
+    const newRadio = document.getElementById('add_new');
+    const existingSection = document.getElementById('existing-address-section');
+    const newSection = document.getElementById('new-address-section');
+
+    function toggleAddressSections() {
+        existingSection.style.display = existingRadio.checked ? 'block' : 'none';
+        newSection.style.display = newRadio.checked ? 'block' : 'none';
+    }
+
+    existingRadio.addEventListener('change', toggleAddressSections);
+    newRadio.addEventListener('change', toggleAddressSections);
+    toggleAddressSections();
+
+    const quantityInput = document.getElementById('id_quantity_requested');
+    if (quantityInput) {
+        quantityInput.addEventListener('change', function() {
+            const max = parseInt('{{ medicine.quantity }}');
+            if (parseInt(this.value) > max) {
+                alert(`You cannot request more than ${max} units.`);
+                this.value = max;
+            }
+        });
+    }
+
+    const saveAddressBtn = document.getElementById('save-address-btn');
+    if (saveAddressBtn) {
+        saveAddressBtn.addEventListener('click', function() {
+            const formData = new FormData();
+            formData.append('address_line1', document.getElementById('id_address_line1').value);
+            formData.append('address_line2', document.getElementById('id_address_line2').value);
+            formData.append('city', document.getElementById('id_city').value);
+            formData.append('state', document.getElementById('id_state').value);
+            formData.append('postal_code', document.getElementById('id_postal_code').value);
+            formData.append('country', document.getElementById('id_country').value);
+            formData.append('is_primary', document.getElementById('id_is_primary').checked);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+            document.querySelectorAll('.invalid-feedback').forEach(el => el.textContent = '');
+            const addressStatus = document.getElementById('address-status');
+            addressStatus.innerHTML = '';
+
+            saveAddressBtn.disabled = true;
+            saveAddressBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Saving...';
+
+            fetch("{% url 'medicines:create_delivery_address' %}", {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    addressStatus.innerHTML = `
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="bi bi-check-circle-fill me-2"></i>${data.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                    const select = document.getElementById('id_delivery_address');
+                    if (select) {
+                        const option = document.createElement('option');
+                        option.value = data.address_id;
+                        option.textContent = data.address_display;
+                        option.selected = true;
+                        select.appendChild(option);
+                        existingRadio.checked = true;
+                        toggleAddressSections();
+                    }
+                    document.getElementById('id_address_line1').value = '';
+                    document.getElementById('id_address_line2').value = '';
+                    document.getElementById('id_city').value = '';
+                    document.getElementById('id_state').value = '';
+                    document.getElementById('id_postal_code').value = '';
+                    document.getElementById('id_country').value = '';
+                    document.getElementById('id_is_primary').checked = false;
+                } else {
+                    for (const field in data.errors) {
+                        const input = document.getElementById(`id_${field}`);
+                        const errorDiv = document.getElementById(`${field}_error`);
+                        if (input && errorDiv) {
+                            input.classList.add('is-invalid');
+                            errorDiv.textContent = data.errors[field][0].message;
+                        }
+                    }
+                    addressStatus.innerHTML = `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>${data.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                addressStatus.innerHTML = `
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>An error occurred. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>`;
+            })
+            .finally(() => {
+                saveAddressBtn.disabled = false;
+                saveAddressBtn.innerHTML = '<i class="bi bi-save me-2"></i> Save Address';
+            });
+        });
+    }
+});
+</script>
+{% endblock %}
