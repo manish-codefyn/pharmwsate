@@ -1,4 +1,4 @@
-# PharmwSate 💊
+# PharmWaste 💊
 
 **Smart Pharmaceutical Inventory & Sales Management System**
 
